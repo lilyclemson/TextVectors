@@ -83,7 +83,7 @@ corp := int.Corpus(sentences, wordNGrams, discardThreshold, minOccurs, dropoutK)
 vocabulary := corp.Vocabulary;
 trainDat := corp.GetTraining;
 trainCount := COUNT(trainDat);
-OUTPUT(trainCount); // working
+// OUTPUT(trainCount); // working
 vocabSize := corp.vocabSize;
 nnShape := [vocabSize, vecLen, vocabSize];
 calConst := 25;
@@ -103,6 +103,8 @@ batchSizeAdj := IF(batchSize = 0, batchSizeCalc, batchSize);
 nn := int.SGD(nnShape, trainToLoss, numEpochs, batchSizeAdj, learningRate, negSamples, noProgressEpochs);
 // OUTPUT(nn);// working
 finalWeights := nn.Train_Dupl(trainDat);
+OUTPUT(finalWeights);// ISSUE ****
+
 computeWordVectors(DATASET(SliceExt) slices, DATASET(WordInfo) words,
 																SET OF UNSIGNED shape) := FUNCTION
     w := int.Weights(shape);  // Module to manage weights
@@ -125,7 +127,9 @@ computeWordVectors(DATASET(SliceExt) slices, DATASET(WordInfo) words,
 END;
 // Now extract the final weights for the first layer as the word vectors
 wVecs := computeWordVectors(finalWeights, vocabulary, nnShape);
-OUTPUT(wVecs);
+// OUTPUT(wVecs);
+
+
 
 DATASET(TextMod) makeWordModel(DATASET(WordInfo) words) := FUNCTION
     modOut := PROJECT(words, TRANSFORM(TextMod, SELF.typ := Types.t_ModRecType.Word,
